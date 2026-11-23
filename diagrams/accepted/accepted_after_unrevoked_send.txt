@@ -1,0 +1,41 @@
+status: ok
+reads back as its claim: yes
+
+[folded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ⟦2⟧ ∄ ExampleEvent.sent payload   [forbidden]
+  (start of trace) #2
+  (box)
+    ExampleEvent.accepted payload   +1 folded
+  (box) #2
+    ExampleEvent.accepted payload #2
+    ExampleEvent.sent payload
+    ExampleEvent.keyLeaked payload
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (start of trace) #2 -> (end of trace)   ⟦2⟧
+  (box) -> (end of trace)
+  (box) #2 -> (end of trace)
+
+[unfolded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ⟦2⟧ ∄ ExampleEvent.sent payload   [forbidden]
+  (start of trace) #2
+  ⟦3⟧ ∄ ExampleEvent.revoked payload   [forbidden]
+  (box)
+    ExampleEvent.accepted payload
+    ExampleEvent.sent payload
+  (box) #2
+    ExampleEvent.accepted payload #2
+    ExampleEvent.sent payload #2
+    ExampleEvent.keyLeaked payload
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (start of trace) #2 -> (end of trace)   ⟦2⟧
+  (box) -> (end of trace)
+  (box) #2 -> (end of trace)
+  ExampleEvent.sent payload -> ExampleEvent.accepted payload   ⟦3⟧

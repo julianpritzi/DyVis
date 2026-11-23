@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<!-- Interactive diagrams of DyLean theorems; by default the reference theorems in `DYVis/Theorem/Example.lean`.
+     Reading rule: start at any box, follow the arrows down, and you have an
+     accepted run. Converging arrows are alternatives; a container box is a
+     conjunction, so leaving it means everything inside it happened.
+     A dashed box is a named predicate from the source, foldable on its own.
+     Layout is ELK rather than dagre: dagre ignores compound nesting when
+     ranking, and lays a container beside its successor instead of above it. -->
+<meta charset="utf-8">
+<title>DYVis</title>
+<script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/elkjs@0.9.3/lib/elk.bundled.js"></script>
+<script src="https://unpkg.com/cytoscape-elk@2.2.0/dist/cytoscape-elk.js"></script>
+<script src="https://unpkg.com/cytoscape-node-html-label@1.2.2/dist/cytoscape-node-html-label.min.js"></script>
+<style>
+  body { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+         margin: 0; background: #fbfbfa; color: #1b1b1b; overflow: hidden; }
+  #cy { height: 100vh; position: relative; }
+  #ctl { position: fixed; right: 14px; top: 12px; display: flex; gap: 6px; }
+  /* A second row rather than another control: the bar is long already. */
+  #stats { position: fixed; right: 15px; top: 42px; font-size: 11px; color: #8a8a82; }
+  #ctl label { font: inherit; border: 1px solid #ddd; background: #fff;
+    padding: 3px 9px; border-radius: 5px; cursor: pointer; color: #55554e; }
+  #src { position: fixed; left: 14px; bottom: 10px; color: #8a8a82; font-size: 11px;
+    font-family: ui-monospace, Menlo, monospace; }
+  #srcpick { position: fixed; left: 10px; bottom: 8px; font: 11px ui-monospace, Menlo, monospace;
+    border: 1px solid #e2e2dc; background: #fff; color: #55554e; border-radius: 5px;
+    padding: 2px 6px; cursor: pointer; }
+  #left { position: fixed; right: 14px; bottom: 10px; color: #8a8a82; font-size: 11px;
+    font-family: ui-monospace, Menlo, monospace; }
+  #accept:not([disabled]) { border-color: #2b5fd9; color: #2b5fd9; }
+  #ctl button, #ctl select, #ctl a { font: inherit; border: 1px solid #ddd; background: #fff;
+                border-radius: 5px; padding: 3px 9px; cursor: pointer; color: #666;
+                text-decoration: none; }
+  #warn { position: fixed; left: 250px; right: 0; bottom: 0; z-index: 10;
+          background: #b3261e; color: #fff; padding: 9px 14px; }
+  /* Must match the Cytoscape label font, which is what sizes the node. */
+  .nlabel { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+            color: #1b1b1b; white-space: nowrap; }
+  .nlabel.def { color: #6a6a62; }
+  .nlabel.neg { color: #a4443c; }
+  /* The `+N` is what says a stretch is abbreviated -- fold a bounded `∄` off
+     the page and nothing else does. Filled and rounded so it is not read as
+     part of the label, and NOT coloured: hue means which walk you are on, and
+     the box's own red where it has one, on the same reasoning as the glass. */
+  .nlabel .cnt { color: #fff; background: #55554e; margin-left: 8px;
+                 padding: 1px 7px; border-radius: 9px; font-size: 11px;
+                 font-weight: 700; letter-spacing: .2px; }
+  .nlabel.neg .cnt { background: #a4443c; }
+  .nlabel .chk { color: #7a6a3a; font-size: 11px; margin-top: 3px; }
+  /* Alternatives on one event. A divider rather than a box per side: boxes
+     already mean conjunction here, and nesting them would overload that. The
+     hairline is round the WHOLE cell, not round either side, so it says where
+     the choice starts and stops without saying anything about its halves. */
+  .nlabel .alt { display: flex; gap: 12px; margin-top: 3px;
+    border: 1px solid #cfcdc2; border-radius: 4px; padding: 3px 5px; }
+  .nlabel .alt > div { padding-left: 12px; border-left: 1.5px solid #b9b9b2; }
+  .nlabel .alt > div:first-child { padding-left: 0; border-left: none; }
+  .nlabel.neg .alt { border-color: #d9a29c; }
+  .nlabel.neg .chk { color: #a4443c; opacity: .85; }
+  .nlabel .chk::before { content: "\2022"; margin-right: 6px; opacity: .5; }
+  /* Pushes the text left of centre by half this, leaving the rest of the room
+     the sizing label reserved on the right for the glass. */
+  .nlabel.has-glass { padding-right: 25px; }
+  /* The route from the picture to the code. Sits over the canvas, so it is
+     pointer-transparent except on the controls themselves -- panning and
+     box-selection have to keep working through it. */
+  .glasses { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  .glass { position: absolute; pointer-events: auto; width: 17px; height: 17px;
+    padding: 0; display: grid; place-items: center; cursor: pointer;
+    transform-origin: top left; opacity: .45;
+    border: 1px solid; border-radius: 4px; }
+  .glass:hover { opacity: 1; }
+  .sites { position: absolute; pointer-events: auto; z-index: 6; min-width: 210px;
+    max-width: 330px; background: #fff; border: 1px solid #d7d7cf; border-radius: 6px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.13); padding: 4px; }
+  .sites-head { font-size: 10px; color: #8a8a82; padding: 3px 7px 5px; }
+  .site { padding: 4px 7px; border-radius: 4px; cursor: pointer; font-size: 11px;
+    display: flex; flex-direction: column; gap: 1px;
+    text-decoration: none; color: inherit; }
+  .site:hover { background: #eef2fd; color: #2b5fd9; }
+  .site.dead { cursor: default; color: #a0a098; }
+  .site.dead:hover { background: none; color: #a0a098; }
+  .site-file { color: #a0a098; font-size: 10px; }
+</style>
+
+<div id="cy"></div>
+<div id="warn" hidden></div>
+<div id="ctl">
+  <label id="pick" title="load a claims file">open<input id="file" type="file" accept=".json" hidden></label>
+  <a id="thmsrc" title="open this theorem in the editor" hidden>theorem</a>
+  <select id="thm"></select>
+  <button id="all">unfold all</button>
+  <button id="args">args</button>
+  <button id="reset">reset</button>
+  <button id="accept" hidden></button>
+</div>
+<span id="src"></span>
+<div id="stats"></div>
+<select id="srcpick" hidden></select>
+<span id="left"></span>
+
+<script src="lower.js"></script>
+<script src="graph.js"></script>
+<script src="read.js"></script>
+<script>
+cytoscape.use(cytoscapeElk);
+
+// Three different things can be wrong, and they mean different things.
+// `unsupported` is a shape the renderer knows it cannot draw. `mismatch` is
+// something lost or invented. A failed round trip is worse than either: the
+// picture is complete and still says something other than the theorem.
+let CLAIMS = {};
+let EMITTERS = {};
+let SOURCES = {};
+
+// Where the model can log this event. Empty for a theorem with no reachability
+// premise, so those nodes get no glass and no room reserved for one.
+const emitterSites = ctor =>
+  (EMITTERS[document.getElementById("thm")?.value] || {})[ctor] || [];
+
+// Room INSIDE the box for its own glass. The label that SIZES a node is drawn
+// at zero opacity -- the text you see comes from `name` -- so widening it with
+// characters costs nothing visible, and Cytoscape measures them in its own
+// metric, which is the one that decides the box. Reserving in CSS instead
+// cannot work: the label box is centred on the node, so padding one side comes
+// straight out of the other. Whitespace is no good either; it gets collapsed
+// before measuring. The name itself is untouched -- it is what the picture is
+// read back from.
+const glassRoom = els => els.map(e =>
+  e.data && e.data.ctor && e.data.label && emitterSites(e.data.ctor).length
+    ? { ...e, data: { ...e.data, label: e.data.label.replace(/^([^\n]*)/, "$1MMMM") } }
+    : e);
+
+// A node is sized from its Cytoscape label, which is invisible; what is drawn
+// is the HTML one, whose condition lines are a smaller font with a margin each.
+// Measured at the default line height the two disagree by about 4px a line, and
+// with five conditions that eats the whole padding and the border cuts the last
+// of them. 1.35 is the drawn line box: 11px text at normal leading, plus 3.
+const LINE = 1.35;
+
+function showWarning() {
+  const box = document.getElementById("warn");
+  const msgs = warnings(document.getElementById("thm").value);
+  box.hidden = !msgs.length;
+  box.textContent = msgs.join("    \u2022    ");
+}
+
+// Everything the banner would say about the graph currently in `G`. Split out
+// because it is a function of the LOWERED graph and nothing else -- no DOM, no
+// layout, not even a Cytoscape instance -- which is what lets the picker below
+// ask it about a diagram that has never been drawn.
+function warnings(name) {
+  const msgs = [];
+  if (G.unsupported)
+    msgs.push("Diagram incomplete/incorrect: this theorem shape is not supported");
+  if (G.mismatch) msgs.push("Does not match the theorem: " + G.mismatch.join("; "));
+  msgs.push(...notationFaults());
+  msgs.push(...readsBack(name));
+  return msgs;
+}
+
+// The same question about a diagram that is not on screen. `G` and `expanded`
+// are where the drawing code looks, so they are swapped and put back rather
+// than threaded through every function -- and the banner is only ever computed
+// on the FOLDED view, so clearing `expanded` here matches `show` exactly.
+function faultsFor(name) {
+  if (!GRAPHS[name]) return [];
+  const wasG = G, wasOpen = new Set(expanded);
+  G = GRAPHS[name];
+  expanded.clear();
+  try { return warnings(name); }
+  catch (e) { return ["could not check the diagram: " + e.message]; }
+  finally {
+    G = wasG;
+    expanded.clear();
+    for (const id of wasOpen) expanded.add(id);
+  }
+}
+
+// The notation audit. These are faults in the PICTURE, not in the claim behind
+// it, so `readsBack` cannot see them: a walk nobody can enter contributes
+// nothing to what is read back, and duplicate alternatives collapse in the
+// normal form. A reader has no such luxury -- the ink is on the page.
+//
+// Run on the view as drawn AND on the fully unfolded one, since a fold hides
+// the fault without curing it.
+function notationFaults() {
+  if (G.failed) return [];
+  const here = auditElements(elements(), []);
+  const was = new Set(expanded);
+  try {
+    for (const id of Object.keys(G.nodes)) if (revealed(id).length) expanded.add(id);
+    return [...new Set([...here, ...auditElements(elements())])]
+      .map(m => "SOMETHING IS WRONG WITH THIS DIAGRAM: " + m);
+  } catch (e) {
+    return ["could not audit the diagram: " + e.message];
+  } finally {
+    expanded.clear();
+    for (const id of was) expanded.add(id);
+  }
+}
+
+// Read on the FULLY UNFOLDED diagram: a folded box hides its contents, so a
+// folded reading could not recover the claim and would fail for no reason.
+function readsBack(name) {
+  const claim = CLAIMS[name];
+  if (!claim || G.failed) return [];
+  const was = new Set(expanded);
+  try {
+    for (const id of Object.keys(G.nodes)) if (revealed(id).length) expanded.add(id);
+    return canon(readGraph(elements())) === claimCanon(claim, pretty) ? []
+      : ["READS BACK AS A DIFFERENT CLAIM: the picture does not say what the theorem says"];
+  } catch (e) {
+    return ["could not read the diagram back: " + e.message];
+  } finally {
+    expanded.clear();
+    for (const id of was) expanded.add(id);
+  }
+}
+
+const cy = cytoscape({
+  container: document.getElementById("cy"),
+  elements: glassRoom(elements()),
+  style: [
+    { selector: 'node[kind = "event"]', style: {
+        "shape": "round-rectangle", "background-color": "#fff",
+        "border-color": "#b9b9b2", "border-width": 1.5,
+        "label": "data(label)", "text-valign": "center", "text-opacity": 0,
+        "text-wrap": "wrap", "line-height": LINE,
+        "font-family": "ui-monospace, Menlo, monospace", "font-size": 12,
+        "padding": "10px", "width": "label", "height": "label" } },
+    { selector: 'node[kind = "def"][open = "no"]', style: {
+        "shape": "round-rectangle", "background-color": "#fbfbf7",
+        "border-color": "#c2c2b8", "border-width": 1.5, "border-style": "dashed",
+        "label": "data(label)", "text-valign": "center", "text-opacity": 0,
+        "line-height": LINE,
+        "font-family": "ui-monospace, Menlo, monospace", "font-size": 12,
+        "padding": "10px", "width": "label", "height": "label" } },
+    { selector: 'node[kind = "def"][open = "yes"]', style: {
+        "shape": "round-rectangle", "background-color": "#fafaf5",
+        "border-color": "#c2c2b8", "border-width": 1.5, "border-style": "dashed",
+        "padding": "16px", "label": "data(title)", "text-valign": "top",
+        "text-halign": "center", "text-margin-y": -6, "text-margin-x": "data(nudge)",
+        "text-opacity": 1,
+        "font-family": "ui-monospace, Menlo, monospace", "font-size": 11,
+        "color": "#8a8a82" } },
+    { selector: 'node[kind = "checks"]', style: {
+        "shape": "round-rectangle", "background-color": "#fbfbf7",
+        "border-color": "#ceccc0", "border-width": 1.5,
+        "label": "data(label)", "text-valign": "center", "text-opacity": 0,
+        "text-wrap": "wrap", "font-size": 12, "line-height": LINE,
+        "font-family": "ui-monospace, Menlo, monospace",
+        "padding": "10px", "width": "label", "height": "label" } },
+    // One turn on of a recursive predicate. Dashed like the box it re-enters --
+    // it IS that box, one turn along -- and sized from its label like any other
+    // node, or cytoscape draws it as a default ellipse with the text nowhere.
+    { selector: 'node[kind = "loop"]', style: {
+        "shape": "round-rectangle", "background-color": "#fbfbf7",
+        "border-color": "#c2c2b8", "border-width": 1.5, "border-style": "dashed",
+        "label": "data(label)", "text-valign": "center", "text-opacity": 0,
+        "text-wrap": "wrap", "line-height": LINE,
+        "font-family": "ui-monospace, Menlo, monospace", "font-size": 12,
+        "padding": "10px", "width": "label", "height": "label" } },
+    // Same shapes as anything else, in the colour of something that did not run.
+    { selector: 'node[neg = "yes"]', style: {
+        "background-color": "#fdf5f4", "border-color": "#d9a29c" } },
+    { selector: 'node[kind = "def"][neg = "yes"][open = "yes"]', style: {
+        "background-color": "#fdf7f6", "color": "#b4736c" } },
+    // Solid = a conjunction we inferred; dashed = a name from the Lean. Two
+    // different things, so the fill separates them as well as the border does.
+    { selector: 'node[kind = "group"]', style: {
+        "shape": "round-rectangle", "background-color": "#e4e5dd",
+        "border-color": "#b6b8a9", "border-width": 1.5, "padding": "14px",
+        "label": "data(title)", "text-valign": "top", "text-halign": "center",
+        "text-margin-y": -6, "font-size": 11, "color": "#8a8a82",
+        "font-family": "ui-monospace, Menlo, monospace" } },
+    { selector: 'node[kind = "group"][neg = "yes"]', style: { "color": "#b4736c" } },
+    // An absence has no witness to draw, so it never becomes a node.
+    // An EMPTY event: a point in the run that is not an occurrence. There are
+    // as many of these between any two events as you like, so putting one
+    // anywhere asserts nothing -- which is what lets arrows converge on it.
+    { selector: 'node[kind = "start"], node[kind = "join"]', style: {
+        "shape": "ellipse", "width": 11, "height": 11,
+        "background-color": "#c8c8c2", "border-width": 0 } },
+    // Bigger than the start dot only so the arrows converging on it are legible.
+    { selector: 'node[kind = "join"]', style: { "width": 17, "height": 17 } },
+    // The point a recursive box begins again from. A dot, like the others that
+    // stand for a place rather than a thing, and hollow because nothing in the
+    // run happens here.
+    { selector: 'node[kind = "again"]', style: {
+        "shape": "ellipse", "width": 13, "height": 13,
+        "background-color": "#fbfbf7", "border-color": "#8a8a82",
+        "border-width": 1.5, "border-style": "dashed" } },
+    // End of the trace. Everything drawn happens before it, so a branch in
+    // which nothing happens is still a path: the start dot straight to here.
+    { selector: 'node[kind = "end"]', style: {
+        "shape": "rectangle", "width": 90, "height": 5,
+        "background-color": "#8f8f88", "border-width": 0 } },
+    { selector: "edge", style: {
+        "width": 1.5, "line-color": "#b9b9b2", "target-arrow-color": "#b9b9b2",
+        "target-arrow-shape": "triangle", "curve-style": "bezier",
+        "arrow-scale": 1.1 } },
+    // Bounded by the trigger's STEP rather than by the trigger itself, so the
+    // order between the two is not asserted.
+    { selector: 'edge[weak = "yes"]', style: { "line-style": "dashed" } },
+    // A loop is not a step: it says the box begins again, so it is drawn back
+    // to that box rather than down the page, and dashed so no reader takes it
+    // for happens-before.
+    { selector: 'edge[loop = "yes"]', style: {
+        "line-style": "dashed", "line-color": "#8a8a82",
+        "target-arrow-color": "#8a8a82", "curve-style": "straight",
+        "width": 1.2 } },
+    // The dot is a junction, not a destination: the head belongs on the arrows
+    // LEAVING it, so the way in and the way out read as one path.
+    //
+    // The two meet the dot on OPPOSITE sides of the line to the box, and each
+    // bends out towards its own side, so neither lies on the other. Which side
+    // that is depends on where the box ended up, so both the point and the bow
+    // are computed once the dot is placed; a fixed side would stop the arrows
+    // rotating round the shape as everything else does.
+    { selector: 'edge[head = "no"]', style: {
+        "target-arrow-shape": "none", "target-endpoint": "data(tgtEnd)",
+        "curve-style": "unbundled-bezier",
+        "control-point-distances": "data(bow)", "control-point-weights": [0.6] } },
+    { selector: 'edge[head = "yes"]', style: {
+        "source-endpoint": "data(srcEnd)",
+        "curve-style": "unbundled-bezier",
+        "control-point-distances": "data(bow)", "control-point-weights": [0.4] } },
+    { selector: "edge[never]", style: {
+        "label": "data(never)", "color": "#a4443c", "font-size": 11,
+        "font-family": "ui-monospace, Menlo, monospace", "text-wrap": "wrap",
+        "text-background-color": "#fbfbfa", "text-background-opacity": 1,
+        "text-background-padding": 3 } },
+    // Two arrows between the same pair are the same step under different rules:
+    // the plain one carries the runs that forbid nothing, the coloured one the
+    // run that does. Colour names the absence, so it matches its number.
+    { selector: 'edge[hue]', style: {
+        "line-color": "data(hue)", "target-arrow-color": "data(hue)",
+        "color": "data(hue)", "width": 1.8 } },
+    // Parallel arrows on one step are that step under different rules, and the
+    // question a reader has there is which of them continues the walk they are
+    // on. Hovering answers it. Only EDGES are quietened: a node's label is an
+    // HTML overlay and does not take the element's opacity, so dimming nodes
+    // would leave their text at full strength and read as emphasis.
+    { selector: "edge.quiet", style: { "opacity": 0.08 } },
+    { selector: "edge.lit", style: { "width": 3.4, "z-index": 20 } }
+  ],
+  layout: { name: "preset" },
+  wheelSensitivity: 0.2
+});
+
+// A box with no event name is still a box: it shows only what must hold in it.
+const nodeTpl = cls => d =>
+  `<div class="nlabel ${cls} ${d.neg === "yes" ? "neg" : ""}` +
+  `${emitterSites(d.ctor).length ? " has-glass" : ""}">` +
+  (d.name ? (d.mark || "") + (d.shown || d.name) +
+            (d.hidden ? `<span class="cnt">+${d.hidden}</span>` : "") : "") +
+  (d.checks || []).map(c => c.alt
+    ? `<div class="alt">` + c.alt.map(g =>
+        `<div>` + g.map(x => `<div class="chk">${x.p}</div>`).join("") + `</div>`).join("") + `</div>`
+    : `<div class="chk">${c.p}</div>`).join("") + `</div>`;
+
+cy.nodeHtmlLabel([
+  { query: 'node[kind = "event"]', halign: "center", valign: "center", tpl: nodeTpl("") },
+  { query: 'node[kind = "checks"]', halign: "center", valign: "center", tpl: nodeTpl("") },
+  { query: 'node[kind = "loop"]', halign: "center", valign: "center", tpl: nodeTpl("def") },
+  { query: 'node[kind = "def"][open = "no"]', halign: "center", valign: "center",
+    tpl: nodeTpl("def") }
+]);
+
+// The dot a recursive box begins again from is kept out of the layout -- it
+// hangs on two arrows that are not steps, and a layered layout answers those
+// with a reversed edge and a place of its own choosing. Left out it keeps NO
+// position at all, so it defaults inside the box and both arrows have to leave
+// it and come back. Put it just outside the box's top-left instead, where the
+// arrow down from the name and the arrow across to the turn are both short.
+// How far the loop arrows bow out from the straight line between their ends.
+const BOW = 26;
+
+// Where the two loop arrows meet the dot: perpendicular to the line to the box,
+// one each side, each bowing out the way its own point sits. A function of
+// where the box IS, so it is redone whenever anything moves -- dragging a node
+// by hand moves things just as a layout does.
+function aimAgainDots() {
+  for (const dot of cy.nodes('[kind = "again"]')) {
+    const box = cy.getElementById(dot.id().replace(/__again__$/, ""));
+    if (box.empty()) continue;
+    const b = box.boundingBox(), p = dot.position(), r = dot.width() / 2 + 1;
+    const dx = p.x - (b.x1 + b.x2) / 2, dy = p.y - (b.y1 + b.y2) / 2;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len, ny = dx / len;
+    const at = (sx, sy) => `${(r * sx).toFixed(1)}px ${(r * sy).toFixed(1)}px`;
+    dot.connectedEdges('[head = "no"]').data({ tgtEnd: at(nx, ny), bow: BOW });
+    dot.connectedEdges('[head = "yes"]').data({ srcEnd: at(-nx, -ny), bow: BOW });
+  }
+}
+
+// Only after a LAYOUT does the dot get moved. On a hand-drag it stays where it
+// was put -- and where the dot itself is dragged to, it stays there.
+function placeAgainDots() {
+  for (const dot of cy.nodes('[kind = "again"]')) {
+    const box = cy.getElementById(dot.id().replace(/__again__$/, ""));
+    if (box.empty()) continue;
+    const b = box.boundingBox();
+    dot.position({ x: b.x1 - 26, y: b.y1 + 18 });
+  }
+  aimAgainDots();
+}
+
+// Anything that moves changes the line the two arrows are aimed across.
+cy.on("position", () => aimAgainDots());
+
+// A forbidden shape is attached to nothing, so the layout is free to drop it
+// between two real branches and push them apart. Park them in a column below
+// the bar: they are referred to by number, not by where they sit, and height is
+// cheaper to read than width.
+function parkDetached() {
+  const main = cy.nodes().filter(n => n.data("neg") !== "yes");
+  const detached = cy.nodes().filter(n => n.data("neg") === "yes" && n.isOrphan());
+  if (!main.nonempty() || !detached.nonempty()) return;
+  const mb = main.boundingBox();
+  let y = mb.y2 + 70;
+  detached.forEach(n => {
+    const b = n.boundingBox();
+    // Moving the leaves drags the box that holds them; moving both double-moves.
+    const movable = n.isChildless() ? n : n.descendants().filter(d => d.isChildless());
+    movable.shift({ x: mb.x1 - b.x1, y: y - b.y1 });
+    y += b.h + 26;
+  });
+}
+
+// A conjunct box lists REQUIREMENTS. With its members in one layer they would be
+// laid out across it, which reads as the row of alternatives converging arrows
+// mean everywhere else. So a conjunct is held to at most one node per layer,
+// which stacks them -- while still ordering any two that an arrow relates, since
+// the box may hold a chain as well. `layered.spacing.baseValue` is what sizes
+// the gap: `spacing.nodeNode` is not inherited into a nested graph.
+//
+// A `def` is a name rather than a list, and its contents are alternatives, so it
+// keeps the default layering: nothing orders them, so they share a layer and
+// come out as a row, with the bar they converge on beneath.
+//
+// `elk.padding` has to be at least what the style reserves, because a box is
+// sized by ELK but DRAWN by Cytoscape from its children out. Short by a few
+// pixels the box swells past what the layout reserved for it, and with several
+// levels of nesting that compounds until siblings overlap.
+const BOX_LAYOUT = {
+  group: { "elk.layered.spacing.baseValue": 34,
+           "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+           "elk.layered.layering.coffmanGraham.layerBound": 1,
+           "elk.padding": "[top=24,left=24,bottom=24,right=24]" },
+  // Extra at the top: an unfolded name is drawn above its own border.
+  def: { "elk.layered.layering.strategy": "NETWORK_SIMPLEX",
+         "elk.padding": "[top=30,left=24,bottom=24,right=24]" }
+};
+
+const ELK_OPTS = { "elk.direction": "DOWN",
+  "elk.spacing.nodeNode": 40,
+  "elk.layered.spacing.nodeNodeBetweenLayers": 60,
+  // Keep siblings in the order they are declared, so folding a node cannot
+  // make its neighbours swap sides.
+  "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+  "elk.layered.crossingMinimization.forceNodeModelOrder": true };
+
+// ELK is asynchronous, so viewport fixes have to wait for the run to finish.
+//
+// Laid out in ONE pass with `INCLUDE_CHILDREN`, ELK ranks every node against the
+// whole picture, so sibling boxes are aligned by where their contents END. For a
+// chain that is right; for alternatives it is not -- they all end at the bar, so
+// boxes of different depth get staggered tops and the choice reads as a
+// staircase. Laying each box out as its own graph first, and only then placing
+// it among its siblings, aligns them by where they START: a row across.
+//
+// `SEPARATE_CHILDREN` does not do this. It stops ELK descending, so the contents
+// are never placed at all and the box keeps a default size.
+const elk = new ELK();
+// `running` tells a finished run whether a newer one has replaced it; `busy`
+// says a run is in flight, so a toggle waits rather than landing mid-layout.
+let running = 0, busy = false, queued = null;
+
+const OPTS_OF = kind => ({ "elk.algorithm": "layered", ...ELK_OPTS,
+                           ...(BOX_LAYOUT[kind] || {}) });
+
+// How wide an open box's own name is. A name is drawn CENTRED and does not
+// widen the box it names, so one longer than the box spills equally past both
+// sides and the room for it has to be reserved on both.
+const titleFont = document.createElement("canvas").getContext("2d");
+const titleOf = n => n.data("open") === "yes" ? (n.data("title") || "") : "";
+const titleWidth = n => {
+  const t = titleOf(n);
+  if (!t) return 0;
+  titleFont.font = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
+  return titleFont.measureText(t).width;
+};
+// And how much it takes ABOVE the border, which is where it is drawn: 11px of
+// text lifted 6 further by `text-margin-y`. `elk.padding` cannot cover this --
+// that is room INSIDE the box -- so the slot has to be taller instead, and the
+// contents have to start that far down it.
+const titleLift = n => titleOf(n) ? 18 : 0;
+
+// A box is laid out by ELK but DRAWN by Cytoscape, and the two disagree about
+// its size: ELK reports the room it left round the contents, Cytoscape draws
+// the frame its own style puts there. Reserving ELK's figure leaves every box
+// loose in its slot by the difference -- which is why boxes beside each other
+// did not line up, while the leaves between them did.
+const FRAME = { def: 18, group: 16 };
+const frameOf = n => {
+  const s = n.numericStyle("padding") + n.numericStyle("border-width");
+  return Number.isFinite(s) && s > 0 ? s : (FRAME[n.data("kind")] ?? 12);
+};
+const elkPad = kind => {
+  const s = (BOX_LAYOUT[kind] || {})["elk.padding"] || "";
+  const side = k => { const m = s.match(new RegExp(k + "=(\\d+)")); return m ? +m[1] : 12; };
+  return { top: side("top"), left: side("left"), bottom: side("bottom"), right: side("right") };
+};
+
+// An edge between two boxes is an edge between whatever they are nested in, at
+// the level being laid out. Anything that lifts to a single node says nothing
+// there and is dropped.
+function liftedEdges(parentId, members, edges) {
+  const ids = new Set(members.map(n => n.id())), out = new Map();
+  const lift = n => {
+    let c = n;
+    while (c.nonempty() && !ids.has(c.id())) c = c.parent();
+    return c.nonempty() && ids.has(c.id()) ? c.id() : null;
+  };
+  edges.forEach(e => {
+    const s = lift(e.source()), t = lift(e.target());
+    if (!s || !t || s === t) return;
+    out.set(`${s}>${t}`, { id: `${s}>${t}`, sources: [s], targets: [t] });
+  });
+  return [...out.values()];
+}
+
+async function layoutTree(tops, nodes, edges) {
+  const rel = new Map(), size = new Map(), shift = new Map();
+  const inPass = new Set(nodes.map(n => n.id()));
+
+  const measure = async node => {
+    const kids = node.children().filter(k => inPass.has(k.id())).toArray();
+    if (!kids.length) { node.data("nudge", 0);
+                        const d = node.layoutDimensions({}); return size.set(node.id(), { w: d.w, h: d.h }); }
+    for (const k of kids)
+      if (k.isParent()) await measure(k);
+      else { const d = k.layoutDimensions({}); size.set(k.id(), { w: d.w, h: d.h }); }
+    const r = await elk.layout({ id: node.id(), layoutOptions: OPTS_OF(node.data("kind")),
+      children: kids.map(k => ({ id: k.id(), ...{ width: size.get(k.id()).w,
+                                                  height: size.get(k.id()).h } })),
+      edges: liftedEdges(node.id(), kids, edges) });
+    rel.set(node.id(), (r.children || []).map(c => ({ id: c.id, x: c.x, y: c.y })));
+    // What the box will actually be: its contents, plus the frame drawn round
+    // them -- and at least as wide as its own name, which is drawn outside it.
+    const pad = elkPad(node.data("kind")), f = frameOf(node);
+    const span = { w: r.width - pad.left - pad.right, h: r.height - pad.top - pad.bottom };
+    const drawn = { w: span.w + 2 * f, h: span.h + 2 * f };
+    const lift = titleLift(node);
+    const w = Math.max(drawn.w, titleWidth(node));
+    size.set(node.id(), { w, h: drawn.h + lift });
+    // A name too long for its box runs off to the RIGHT of it rather than out
+    // of both sides, so the box still starts where its slot does and lines up
+    // with whatever it is stacked against.
+    node.data("nudge", (w - drawn.w) / 2);
+    shift.set(node.id(), { x: f - pad.left, y: lift + f - pad.top });
+  };
+
+  for (const n of tops)
+    if (n.isParent()) await measure(n);
+    else { const d = n.layoutDimensions({}); size.set(n.id(), { w: d.w, h: d.h }); }
+
+  const r = await elk.layout({ id: "root", layoutOptions: OPTS_OF(null),
+    children: tops.map(n => ({ id: n.id(), width: size.get(n.id()).w,
+                                           height: size.get(n.id()).h })),
+    edges: liftedEdges(null, tops, edges) });
+
+  // Only leaves are positioned; Cytoscape derives a box from what is inside it.
+  const put = (id, ox, oy) => {
+    const kids = rel.get(id);
+    if (!kids) return cy.getElementById(id)
+      .position({ x: ox + size.get(id).w / 2, y: oy + size.get(id).h / 2 });
+    const d = shift.get(id) || { x: 0, y: 0 };
+    for (const k of kids) put(k.id, ox + k.x + d.x, oy + k.y + d.y);
+  };
+  for (const c of r.children || []) put(c.id, c.x, c.y);
+}
+
+function runLayout(fit, anchorBefore, place) {
+  const token = ++running;
+  busy = true;
+  // Forbidden shapes are laid out SEPARATELY and parked below the bar by hand.
+  // In the main layout they would reserve a column among the real branches, and
+  // moving them afterwards leaves that hole behind; left out of layout
+  // altogether -- as they were -- their own contents never get placed at all,
+  // so anything bigger than one node was drawn on top of itself.
+  const banned = cy.nodes('[neg = "yes"]');
+  const main = cy.nodes().not(banned);
+  // `contains` is vacuously true of the empty collection, so an orphan's missing
+  // parent has to be tested for first or every top-level node is filtered out.
+  const top = (set, n) => n.parent().empty() || !set.contains(n.parent());
+  // A LOOP arrow is not a step, and ELK must not see it: the box and its dot
+  // point at each other, which is a cycle, and a layered layout answers a cycle
+  // by reversing an edge and putting the two wherever that lands them.
+  const pass = set => layoutTree(set.filter(n => top(set, n)).toArray(),
+                                 set.toArray(),
+                                 set.edgesWith(set).filter(e => e.data("loop") !== "yes"));
+  (async () => {
+    await pass(main);
+    if (banned.nonempty()) await pass(banned);
+    if (token !== running) return;
+    busy = false;
+    // A local reflow keeps every position it did not compute, parking included.
+    if (place) { placeAgainDots(); return place(); }
+    // Parking moves nodes, so any fitting has to happen after it.
+    placeAgainDots();
+    parkDetached();
+    // `fit` blows a small graph up to fill the viewport, so settle at 1:1 or
+    // below. Zooming in by hand afterwards is still unrestricted.
+    if (fit) { cy.fit(40); if (cy.zoom() > 1) { cy.zoom(1); cy.center(); } }
+    else if (anchorBefore) {
+      const after = cy.getElementById(G.root).renderedPosition();
+      cy.panBy({ x: anchorBefore.x - after.x, y: anchorBefore.y - after.y });
+    }
+  })().catch(e => { busy = false; console.error("layout failed", e); });
+}
+
+// `cy.json({elements})` PATCHES element data: a key absent from the new data
+// keeps whatever it had, so an edge that stops carrying a `∄` goes on wearing
+// it -- and folding is the only thing that ever moves a mark, so every mark was
+// one fold away from being wrong. Removing and re-adding instead loses a node's
+// HTML label, the plugin racing the rebuild, so patch and then clear whatever
+// the patch left behind. Structural keys are the patch's own business.
+const STRUCTURAL = new Set(["id", "source", "target", "parent"]);
+// How much of the graph is on the page. A `+N` can be off screen or scrolled
+// past, and the risk is not missing one of them -- it is taking what is drawn
+// for the whole of the theorem.
+function showStats() {
+  document.getElementById("stats").textContent =
+    `${visible().size} of ${Object.keys(G.nodes).length} nodes shown`;
+}
+
+const setElements = els => {
+  showStats();
+  const want = Object.fromEntries(els.map(e => [e.data.id, e.data]));
+  cy.json({ elements: glassRoom(els) });
+  cy.elements().forEach(e => {
+    const d = want[e.id()];
+    if (!d) return;
+    for (const k of Object.keys(e.data()))
+      if (!(k in d) && !STRUCTURAL.has(k)) e.removeData(k);
+  });
+};
+
+// Re-layout without moving the viewport. The anchor is always the trigger, so
+// folding a node halfway up the graph cannot drag the rest across the screen.
+function redraw() {
+  const root = cy.getElementById(G.root);
+  const before = root.nonempty() ? { ...root.renderedPosition() } : null;
+  setElements(elements());
+  runLayout(false, before);
+}
+
+const leafPositions = () => Object.fromEntries(
+  cy.nodes().filter(n => n.isChildless()).map(n => [n.id(), { ...n.position() }]));
+
+// Where a node hands over to the rest of the picture: the point its outgoing
+// arrow leaves from. Arrows run earlier -> later and time runs down, so what a
+// node reveals is drawn ABOVE it -- pin this and a reveal grows away from
+// everything else rather than pushing it along.
+const handover = id => {
+  const b = cy.getElementById(id).boundingBox();
+  return { x: (b.x1 + b.x2) / 2, y: b.y2 };
+};
+
+// Which nodes a toggle of `id` is allowed to move. `null` if some member is
+// revealed from outside as well: moving a shared node would drag it out of the
+// branch that is staying put. No claim in the corpus has one, but nothing rules
+// it out, and the fallback is just the old whole-graph redraw.
+function localScope(id) {
+  const vis = visible(), scope = revealClosure(id, vis);
+  for (const x of vis)
+    if (!scope.has(x) && isOpen(x))
+      for (const d of revealed(x))
+        if (d !== id && scope.has(d)) return null;
+  return scope;
+}
+
+// Everything a node reveals, however deep, IGNORING the fold state: what a
+// shift-click has to open. `revealClosure` stops at whatever is currently shut,
+// which is the opposite of what is wanted here.
+function deepReveal(id) {
+  const seen = new Set([id]), stack = [id];
+  while (stack.length)
+    for (const d of revealed(stack.pop()))
+      if (!seen.has(d)) { seen.add(d); stack.push(d); }
+  return seen;
+}
+
+// Fold or unfold, reflowing ONLY what that node reveals. The rest of the
+// picture keeps the positions it already had, so reading one branch does not
+// rearrange the others -- at the price of the reflowed part overlapping its
+// neighbours, which is the cheaper of the two confusions. Nothing pans: the
+// node stays under the pointer that hit it.
+//
+// The whole graph is still laid out and most of it thrown away. That reads
+// oddly but it is what keeps this short -- laying out a sub-DAG on its own
+// means handing ELK a collection whose parents may be outside it -- and a full
+// layout costs about 50ms on the largest claim here.
+function redrawLocal(id, deep) {
+  // A second toggle while the layout is in flight would `stop()` it, so the
+  // placement below never runs and the graph is left wherever ELK had got to --
+  // which is its own coordinate space, nowhere near the picture. Wait instead.
+  if (busy) { queued = { id, deep }; return; }
+  const before = leafPositions(), from = handover(id);
+  // Folding takes the subtree with it, so reopening starts from one level
+  // again. Left open underneath, a box remembered a reveal from minutes ago and
+  // sprang back to it, which is never what the click asked for.
+  if (deep) for (const x of deepReveal(id)) { if (revealed(x).length) expanded.add(x); }
+  else if (expanded.has(id)) for (const x of deepReveal(id)) expanded.delete(x);
+  else expanded.add(id);
+  setElements(elements());
+  const scope = localScope(id);
+  // Nothing shared to move, and nothing new outside the scope to hold still:
+  // either way this is not a local change, so fall back to the whole graph.
+  if (!scope) return runLayout(false, null);
+  // A dot belongs to the node it points at. Its id is not a graph node's, and
+  // where its target is top-level it has no parent to inherit from either, so
+  // it has to find its scope by name or it reads as an unrelated arrival.
+  const owner = n => n.id().replace(/__start__$/, "");
+  const moves = n => scope.has(owner(n)) || n.parents().some(p => scope.has(p.id()));
+  // A forbidden shape reserves no column among the real branches: it is laid
+  // out in a pass of its own and parked below the bar. So one arriving is not a
+  // reason to move anything else -- it just has to be parked, which is why it
+  // is excluded here and `parkDetached` is called below instead. Unfolding a
+  // trigger brings one in on most DANE claims, and that alone was throwing the
+  // whole picture away.
+  const arrived = n => n.isChildless() && !moves(n) && !before[n.id()];
+  if (cy.nodes().some(n => arrived(n) && n.data("neg") !== "yes"))
+    return runLayout(false, null);
+  const parked = cy.nodes('[neg = "yes"]').some(arrived);
+  runLayout(false, null, () => {
+    const to = handover(id);
+    const dx = from.x - to.x, dy = from.y - to.y;
+    cy.nodes().filter(n => n.isChildless()).forEach(n => {
+      if (moves(n)) { const p = n.position(); n.position({ x: p.x + dx, y: p.y + dy }); }
+      else if (before[n.id()]) n.position(before[n.id()]);
+    });
+    // Only when one has just turned up: parking is relative to the rest of the
+    // picture, so doing it every time would drift the column on every click.
+    if (parked) parkDetached();
+    const next = queued;
+    queued = null;
+    if (next) redrawLocal(next.id, next.deep);
+  });
+}
+
+showWarning();
+runLayout(true);
+
+cy.on("tap", "node", e => {
+  const id = e.target.id(), n = G.nodes[id];
+  if (!n || n.kind === "group" || n.kind === "end" || !revealed(id).length) return;
+  // Shift opens the whole subtree. A name three deep is three clicks otherwise,
+  // and the fold state in between is rarely what anyone wanted to look at.
+  redrawLocal(id, e.originalEvent && e.originalEvent.shiftKey);
+});
+
+// Hovering an arrow lights the runs THROUGH it -- the reading rule of `read.js`
+// restricted to paths that use this step. Not "every arrow of the same colour"
+// and not "every grey arrow": a walk may fan out over branches this arrow is
+// not on, and lighting those says a reader standing here could be there.
+//
+// The traversal is `walks()`'s, kept as a graph of STATES so a path can be
+// followed both ways from the step: a state is a node together with the colour
+// being carried and what the step just taken offered. On a colour only that
+// colour continues; grey may stay grey or take up a colour that STARTS here,
+// never one offered a step earlier and declined -- which is why hovering a grey
+// arrow does not light the colours parallel to it.
+//
+// Display only, and so deliberately outside the snapshot record.
+let runG = null, runGFor = null, runGFold = "";
+const runGraph = () => {
+  // Keyed on the graph AND the fold state: edge ids are structural strings and
+  // a few of them recur across claims, so a cache left standing when the
+  // diagram changed did not come up empty -- it lit a handful of arrows that
+  // happened to share a name with the last one's.
+  const fold = [...expanded].sort().join(",");
+  if (runG && runGFor === G && runGFold === fold) return runG;
+  const els = elements();
+  const node = {}, into = {}, kids = {};
+  for (const e of els)
+    if (!e.data.source) { node[e.data.id] = e.data; (kids[e.data.parent || ""] ||= []).push(e.data.id); }
+    else if (e.data.loop !== "yes") (into[e.data.target] ||= []).push(e.data);
+  // A loop arrow is not a departure: it is not a step, so the node it
+  // leaves is still read where it stands.
+  const departs = new Set(els.filter(e => e.data.source && e.data.loop !== "yes")
+                             .map(e => e.data.source));
+  const offeredOn = (s, t) =>
+    new Set((into[t] || []).filter(e => e.source === s).map(e => e.walk || null));
+  // Keyed on the TURNS each loop arrow serves. The dot between them is not a
+  // node any run visits, so it cannot be found by its endpoints.
+  const outOfLoop = {};
+  for (const e of els)
+    if (e.data.source && e.data.loop === "yes")
+      for (const t of (e.data.serves || "").split(" ").filter(Boolean))
+        (outOfLoop[t] ||= []).push(e.data);
+  const key = (id, walk, offered) => `${id}|${walk}|${[...offered].sort().join(",")}`;
+  const fwd = {}, rev = {}, byEdge = {};
+  const seen = new Set();
+  const root = Object.keys(node).find(id => node[id].kind === "end");
+  const stack = root ? [[root, null, new Set()]] : [];
+  while (stack.length) {
+    const [id, walk, offered] = stack.pop();
+    if (!node[id]) continue;
+    const k = key(id, walk, offered);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    const step = (nid, nwalk, noff, edgeId) => {
+      const t = { from: k, to: key(nid, nwalk, noff), edgeId };
+      (fwd[k] ||= []).push(t);
+      (rev[t.to] ||= []).push(t);
+      if (edgeId) (byEdge[edgeId] ||= []).push(t);
+      stack.push([nid, nwalk, noff]);
+    };
+    // A LOOP arrow is not a step, so the traversal never takes it and it has no
+    // transitions of its own. It belongs to the node it leaves, which the
+    // traversal does visit: hovering it asks the same question as hovering
+    // that node, and gets the runs the turn is on.
+    for (const e of outOfLoop[id] || []) (byEdge[e.id] ||= []).push({ from: k, to: k, edgeId: null });
+    // A box is a grouping: its contents are read on the walk that reached it.
+    for (const kid of kids[id] || []) if (!departs.has(kid)) step(kid, walk, offered, null);
+    for (const e of into[id] || []) {
+      const c = e.walk || null;
+      if (walk !== null ? c !== walk : !(c === null || !offered.has(c))) continue;
+      step(e.source, c, offeredOn(e.source, id), e.id);
+    }
+  }
+  runGFor = G;
+  runGFold = fold;
+  return runG = { fwd, rev, byEdge, outOfLoop };
+};
+const runsThrough = id => {
+  const { fwd, rev, byEdge, outOfLoop } = runGraph();
+  const lit = new Set([id]);
+  const down = new Set(), up = new Set();
+  // A loop belongs to the node it leaves rather than to a step, so it lights
+  // wherever the run reaches that node -- including from a step far above it.
+  const at = k => {
+    for (const e of outOfLoop[k.slice(0, k.indexOf("|"))] || []) lit.add(e.id);
+  };
+  // Everything a run may still meet from here on, arrows and box descents alike.
+  const descend = start => {
+    const q = [start];
+    while (q.length) {
+      const k = q.pop();
+      if (down.has(k)) continue;
+      down.add(k);
+      at(k);
+      for (const t of fwd[k] || []) { if (t.edgeId) lit.add(t.edgeId); q.push(t.to); }
+    }
+  };
+  const ts = byEdge[id] || [];
+  const q = ts.map(t => t.from);
+  while (q.length) {                             // on towards the bar
+    const k = q.pop();
+    if (up.has(k)) continue;
+    up.add(k);
+    at(k);
+    for (const t of rev[k] || []) { if (t.edgeId) lit.add(t.edgeId); q.push(t.from); }
+  }
+  // A CONJUNCTION is met in FULL, so a run through this step also meets every
+  // member beside it, and their steps are as much on this run as the hovered
+  // one. Box descents only, never the arrows: converging arrows are
+  // ALTERNATIVES and this run took the one it is on.
+  //
+  // And never back into the member we came UP through. Descending there re-
+  // enters it from the top and takes every alternative inside it again --
+  // including the one parallel to the arrow being hovered, whose choice the
+  // hover had already made.
+  for (const k of up)
+    for (const t of fwd[k] || []) if (!t.edgeId && !up.has(t.to)) descend(t.to);
+  for (const t of ts) descend(t.to);             // and back towards the start
+  return lit;
+};
+const unlight = () => cy.edges().removeClass("quiet lit");
+cy.on("mouseover", "edge", e => {
+  const on = runsThrough(e.target.id());
+  const lit = cy.edges().filter(x => on.has(x.id()));
+  if (!lit.length) return;
+  cy.edges().difference(lit).addClass("quiet");
+  lit.addClass("lit");
+});
+cy.on("mouseout", "edge", unlight);
+// A layout or a fold replaces the elements, and a class on one that is gone
+// leaves the page dimmed with nothing to un-dim it.
+cy.on("layoutstart", unlight);
+
+document.getElementById("all").onclick = () => {
+  for (const id of Object.keys(G.nodes)) if (revealed(id).length) expanded.add(id);
+  redraw();
+};
+document.getElementById("reset").onclick = () => { expanded.clear(); redraw(); };
+
+document.getElementById("args").onclick = e => {
+  briefLabels = !briefLabels;
+  e.target.textContent = briefLabels ? "args …" : "args";
+  redraw();
+};
+
+const sel = document.getElementById("thm");
+const thmsrc = document.getElementById("thmsrc");
+
+// The theorem's own definition, the same jump the events offer. Resolved when
+// the diagram changes rather than when the button is clicked: launching an
+// external scheme needs the click still in hand, and an `await` loses it.
+async function refreshSource(name) {
+  const s = SOURCES[name];
+  thmsrc.hidden = !s || !s.file;
+  if (thmsrc.hidden) return;
+  thmsrc.removeAttribute("href");
+  thmsrc.title = `open ${s.decl} in the editor`;
+  try {
+    const r = await fetch(`/review/locate?${query(s.file, s.decl)}`).then(x => x.json());
+    if (SOURCES[sel.value] !== s) return;   // moved on while asking
+    // A control that cannot do anything is worse than no control: served
+    // without the review server this goes away, as accept and the source
+    // picker already do.
+    thmsrc.hidden = !r.uri;
+    if (r.uri) thmsrc.href = r.uri;
+    thmsrc.title = r.found ? `${s.file.replace(/^lean\//, "")}:${r.line}`
+                           : `${s.file.replace(/^lean\//, "")} — could not find ${s.decl}`;
+  } catch { thmsrc.hidden = true; }
+}
+
+thmsrc.addEventListener("click", e => {
+  e.preventDefault();
+  const s = SOURCES[sel.value];
+  if (s) openInEditor(query(s.file, s.decl), thmsrc.href);
+});
+
+function show(name) {
+  G = GRAPHS[name] || GRAPHS[Object.keys(GRAPHS)[0]];
+  expanded.clear();
+  showWarning();
+  setElements(elements());
+  runLayout(true);
+  if (REVIEW) paintReview();
+  refreshSource(name);
+}
+
+sel.onchange = () => show(sel.value);
+
+// Reviewing a diagram means looking at it, so accepting happens here rather
+// than in a terminal. Only `scripts/review.sh` answers these; served any
+// other way the control stays hidden and nothing below runs.
+let REVIEW = null;
+const reviewBtn = document.getElementById("accept");
+
+const reviewMark = { changed: "\u25CF", new: "\u25CB", same: "" };
+
+// The namespace is already said by the claims file that is open.
+const short = k => k.split(".").pop();
+
+// Which diagrams would banner, worked out when the file loads. Two marks say
+// different things and both belong here: `●`/`○` is whether YOU have looked at
+// it, `⚠` is whether the tool has something to say about it. A diagram can
+// easily be one and not the other, and the accepted ones that banner are the
+// ones most worth finding.
+let FAULTS = {};
+
+function paintOptions() {
+  for (const o of sel.options) {
+    const bad = (FAULTS[o.value] || []).length;
+    o.textContent = (REVIEW ? (reviewMark[REVIEW[o.value]] || "") + " " : "")
+      + short(o.value) + (bad ? "  \u26A0" : "");
+    // Set as a property, so a message carrying a quote needs no escaping.
+    o.title = bad ? (FAULTS[o.value] || []).join("\n") : "";
+  }
+}
+
+function paintReview() {
+  if (!REVIEW) return;
+  paintOptions();
+  const st = REVIEW[sel.value];
+  reviewBtn.hidden = false;
+  reviewBtn.textContent = st === "same" ? "accepted" : `accept (${st})`;
+  reviewBtn.disabled = st === "same";
+  const left = Object.values(REVIEW).filter(s => s !== "same").length;
+  document.getElementById("left").textContent = left ? `${left} to review` : "all reviewed";
+}
+
+const refreshReview = () => fetch("/review/status")
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(d => { REVIEW = d.state; paintReview(); })
+  .catch(() => {});
+
+// Straight to the next thing needing a decision, so a pass is one key repeated.
+function nextUnreviewed() {
+  const names = [...sel.options].map(o => o.value);
+  const from = names.indexOf(sel.value);
+  for (let i = 1; i <= names.length; i++) {
+    const n = names[(from + i) % names.length];
+    if (REVIEW && REVIEW[n] !== "same") { sel.value = n; show(n); paintReview(); return; }
+  }
+}
+
+reviewBtn.onclick = () => fetch(`/review/accept?name=${encodeURIComponent(sel.value)}`,
+                                { method: "POST" })
+  .then(r => r.json())
+  .then(d => { if (d.error) return alert(d.error); REVIEW = d.state; paintReview(); nextUnreviewed(); });
+
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+  if (e.key === "a" && REVIEW && !reviewBtn.disabled) reviewBtn.onclick();
+  if (e.key === "j") nextUnreviewed();
+  if (e.key === "u") document.getElementById("all").onclick();
+});
+
+// Which claims file to draw. `?claims=<path>` so a link names its own subject;
+// the review server serves the data directory's claims as `claims/<file>`.
+function load(cs, label) {
+  GRAPHS = lowerAll(cs);
+  CLAIMS = Object.fromEntries(cs.map(e => [e.name.replace(/^DYVis\.Theorem\./, ""), e.claim]));
+  EMITTERS = Object.fromEntries(cs.map(e => [e.name.replace(/^DYVis\.Theorem\./, ""), e.emitters || {}]));
+  // The display name drops the namespace; the editor needs the one Lean knows.
+  SOURCES = Object.fromEntries(cs.map(e =>
+    [e.name.replace(/^DYVis\.Theorem\./, ""), { file: e.file, decl: e.name }]));
+  document.getElementById("src").textContent = label;
+  // An option's value follows its text unless set, and the marks are written
+  // into the text -- so the value has to be pinned here and the text painted.
+  sel.innerHTML = Object.keys(GRAPHS)
+    .map(k => `<option value="${k}"></option>`).join("");
+  FAULTS = Object.fromEntries(Object.keys(GRAPHS).map(k => [k, faultsFor(k)]));
+  paintOptions();
+  show(sel.value);
+  refreshReview();
+}
+
+const claimsUrl = new URLSearchParams(location.search).get("claims") || "claims/reference.json";
+fetch(claimsUrl)
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(cs => load(cs, claimsUrl))
+  .catch(e => {
+    document.getElementById("src").textContent = `could not load ${claimsUrl} (${e})`;
+  });
+
+document.getElementById("file").onchange = ev => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  f.text().then(t => load(JSON.parse(t), f.name));
+};
+
+// Which campaign's claims to draw. Needs a directory listing, so it appears
+// only under the review server; `?claims=` and **open** work regardless.
+const srcpick = document.getElementById("srcpick");
+srcpick.onchange = () => fetch(srcpick.value)
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(cs => load(cs, srcpick.value))
+  .catch(e => { document.getElementById("src").textContent = `could not load (${e})`; });
+
+fetch("/review/claims")
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(d => {
+    if (!d.files.length) return;
+    srcpick.innerHTML = d.files.map(f => `<option value="${f}">${f}</option>`).join("");
+    // A project's data directory has no `reference.json`: draw its first file.
+    if (d.files.includes(claimsUrl)) srcpick.value = claimsUrl;
+    else { srcpick.value = d.files[0]; srcpick.onchange(); }
+    srcpick.hidden = false;
+    document.getElementById("src").hidden = true;
+  })
+  .catch(() => {});
+
+/* ---- where an event is emitted --------------------------------------------
+
+A glass is an OVERLAY, never a graph element. Anything added to the graph would
+be read back as part of the claim and audited as ink with no walk -- so the
+route from the picture to the code must not touch the picture's meaning.
+
+The list is the reachable model's own emitters, computed in `Extract.lean`. It
+over-approximates (a branch a guard never takes still counts), so a site shown
+here may not fire; one NOT shown cannot be reached at all. */
+
+const glassLayer = document.createElement("div");
+glassLayer.className = "glasses";
+document.getElementById("cy").appendChild(glassLayer);
+
+const sitesFor = n => emitterSites(n.data("ctor"));
+
+let sites = null;   // the open list, if any
+function closeSites() { if (sites) { sites.remove(); sites = null; } }
+
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const query = (file, decl) =>
+  `file=${encodeURIComponent(file)}&decl=${encodeURIComponent(decl)}`;
+
+// Ask THIS end to open it: the browser may be on the other side of a remote
+// boundary from the editor and have no handler for `vscode://` at all, which it
+// reports by doing nothing. The URI is the fallback for when it cannot.
+async function openInEditor(q, href) {
+  try {
+    if ((await fetch(`/review/open?${q}`, { method: "POST" }).then(x => x.json())).ok) return;
+  } catch { /* fall through to the browser's own handler */ }
+  if (href) location.href = href;
+}
+
+// Rows are real LINKS, and their targets are resolved when the list opens
+// rather than when a row is clicked. Launching an external scheme needs the
+// user's click to still be in hand, and an `await` in between loses it -- the
+// navigation is then dropped with no error at all.
+async function openSites(node) {
+  closeSites();
+  const list = sitesFor(node);
+  const box = document.getElementById("cy").getBoundingClientRect();
+  const b = node.renderedBoundingBox({ includeLabels: false });
+  const el = document.createElement("div");
+  el.className = "sites";
+  el.style.left = `${Math.min(b.x2 + 6, box.width - 340)}px`;
+  el.style.top = `${b.y1}px`;
+  el.innerHTML = `<div class="sites-head">emitted by</div>` +
+    list.map(s => `<div class="site"><span>${esc(s.decl.split(".").slice(-2).join("."))}</span>` +
+                  `<span class="site-file">${esc(s.file.replace(/^lean\//, ""))}</span></div>`).join("");
+  for (const t of ["mousedown", "pointerdown", "touchstart"])
+    el.addEventListener(t, e => e.stopPropagation());
+  glassLayer.appendChild(el);
+  sites = el;
+
+  const found = await Promise.all(list.map(async s => {
+    try {
+      return { s, r: await fetch(`/review/locate?file=${encodeURIComponent(s.file)}` +
+                                 `&decl=${encodeURIComponent(s.decl)}`).then(x => x.json()) };
+    } catch { return { s, r: null }; }
+  }));
+  if (sites !== el) return;   // closed, or another glass opened, while asking
+  el.innerHTML = `<div class="sites-head">emitted by</div>` + found.map(({ s, r }) => {
+    const name = esc(s.decl.split(".").slice(-2).join("."));
+    const where = esc(s.file.replace(/^lean\//, ""));
+    const q = esc(`file=${encodeURIComponent(s.file)}&decl=${encodeURIComponent(s.decl)}`);    return r && r.uri
+      ? `<a class="site" href="${esc(r.uri)}" data-q="${q}"><span>${name}</span>` +
+        `<span class="site-file">${where}${r.line ? `:${r.line}` : ""}</span></a>`
+      : `<div class="site dead"><span>${name}</span><span class="site-file">` +
+        `${where} — could not locate; is the review server running?</span></div>`;
+  }).join("");
+  el.querySelectorAll("a.site").forEach(a => a.addEventListener("click", e => {
+    e.preventDefault();
+    const q = a.getAttribute("data-q"), href = a.href;
+    closeSites();
+    openInEditor(q, href);
+  }));
+}
+// Anywhere that is not a row closes it -- including the canvas, which swallows
+// its own clicks, so cytoscape has to be asked as well as the document.
+document.addEventListener("click", e => {
+  if (sites && !e.target.closest(".site") && !e.target.closest(".glass")) closeSites();
+}, true);
+
+function placeGlasses() {
+  const open = sites;
+  glassLayer.querySelectorAll(".glass").forEach(g => g.remove());
+  const box = document.getElementById("cy").getBoundingClientRect();
+  // The room reserved for a glass is part of the box, so it grows and shrinks
+  // with it; a glass drawn at a fixed size would not stay in it.
+  const z = cy.zoom();
+  for (const n of cy.nodes()) {
+    if (!sitesFor(n).length) continue;
+    const b = n.renderedBoundingBox({ includeLabels: false });
+    if (b.x2 < 0 || b.y2 < 0 || b.x1 > box.width || b.y1 > box.height) continue;
+    const g = document.createElement("button");
+    g.className = "glass";
+    g.title = "where this can be emitted";
+    g.innerHTML = `<svg viewBox="0 0 16 16" width="11" height="11"><circle cx="6.5" cy="6.5" r="4.5"
+      fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 10 L14.5 14.5"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+    // Inside the border, in the room the label reserved. A tall box is a named
+    // one and wears its name across the top, so its glass sits under that;
+    // a one-line box centres it on the line.
+    g.style.left = `${b.x2 - 22 * z}px`;
+    g.style.top = `${b.h < 60 * z ? b.y1 + (b.h - 17 * z) / 2 : b.y1 + 6 * z}px`;
+    g.style.transform = `scale(${z})`;
+    // Borrowed from the box it belongs to, so it reads as part of that box
+    // rather than as a mark on the diagram: the diagram's own colours mean
+    // something, and a control has no business adding one.
+    g.style.background = n.style("background-color");
+    g.style.borderColor = n.style("border-color");
+    g.style.color = n.data("neg") === "yes" ? "#a4443c" : "#1b1b1b";
+    // Cytoscape listens on the CONTAINER, so a press that bubbles out of the
+    // glass starts dragging the node underneath and the click never lands.
+    for (const t of ["mousedown", "pointerdown", "touchstart"])
+      g.addEventListener(t, e => e.stopPropagation());
+    g.addEventListener("click", e => {
+      e.stopPropagation();
+      if (open && open.dataset.for === n.id()) return closeSites();
+      openSites(n);
+      if (sites) sites.dataset.for = n.id();
+    });
+    glassLayer.appendChild(g);
+  }
+}
+
+// The glasses ride on top of a canvas, so they have to be moved whenever it is.
+let glassTick = null;
+cy.on("render pan zoom resize", () => {
+  if (glassTick) return;
+  glassTick = requestAnimationFrame(() => { glassTick = null; placeGlasses(); });
+});
+</script>

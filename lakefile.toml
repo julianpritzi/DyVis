@@ -1,0 +1,17 @@
+name = "dyvis"
+version = "0.1.0"
+# `lake build` builds the library and its self-checks: the trace demos in
+# `DYVis/Trace/Check/` and the reference theorems in `DYVis/Theorem/Example.lean`,
+# which write `DYVis/Trace/Check/Basic/*.md` and `diagrams/claims/reference.json`.
+defaultTargets = ["DYVis"]
+
+# DyLean, from the fork branch DyAeneas uses. A project that already requires
+# `dylean` (DyAeneas, as a path dependency) supplies its own copy instead.
+[[require]]
+name = "dylean"
+git = "https://github.com/julianpritzi/dylean.git"
+rev = "dyaeneas-main"
+
+[[lean_lib]]
+name = "DYVis"
+globs = ["DYVis", "DYVis.+"]

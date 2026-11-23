@@ -1,0 +1,66 @@
+status: ok
+reads back as its claim: yes
+
+[folded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ⟦2⟧ ∄ EverOffered anchor   [forbidden]   +1 folded
+  (box)
+    ExampleEvent.accepted payload
+    AnchorUnofferedOrRevoked anchor payload   +1 folded
+    AnchorUnofferedOrRevoked anchor other   +1 folded
+    (start of trace) #2
+    (start of trace) #3
+    (start of trace) #4
+  --
+  (start of trace) #2 -> AnchorUnofferedOrRevoked anchor payload   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (start of trace) #2 -> AnchorUnofferedOrRevoked anchor payload
+  (start of trace) #3 -> AnchorUnofferedOrRevoked anchor other
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (box) -> (end of trace)   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (box) -> (end of trace)
+  (start of trace) #3 -> AnchorUnofferedOrRevoked anchor other   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (start of trace) #4 -> ExampleEvent.accepted payload   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (start of trace) #4 -> ExampleEvent.accepted payload
+
+[unfolded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ⟦2⟧ ∄ EverOffered anchor   [forbidden]
+    ExampleEvent.offered offers   [forbidden]
+      • anchor ∈ offers
+  (box)
+    ExampleEvent.accepted payload
+    AnchorUnofferedOrRevoked anchor payload
+      (empty event)
+      (start of trace) #2
+      ExampleEvent.revoked payload
+      (start of trace) #5
+    AnchorUnofferedOrRevoked anchor other
+      (empty event) #2
+      (start of trace) #3
+      ExampleEvent.revoked other
+      (start of trace) #6
+    (start of trace) #4
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (box) -> (end of trace)   ⟦2⟧   walk ⟦2b⟧ #2f6fb5
+  (box) -> (end of trace)   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (box) -> (end of trace)
+  (start of trace) #2 -> (empty event)   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  ExampleEvent.revoked payload -> (empty event)
+  (start of trace) #3 -> (empty event) #2   ⟦2⟧   walk ⟦2b⟧ #2f6fb5
+  ExampleEvent.revoked other -> (empty event) #2
+  (start of trace) #2 -> (empty event)   ⟦2⟧   walk ⟦2b⟧ #2f6fb5
+  ExampleEvent.revoked payload -> (empty event)   ⟦2⟧   walk ⟦2b⟧ #2f6fb5
+  (start of trace) #3 -> (empty event) #2   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  ExampleEvent.revoked other -> (empty event) #2   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (start of trace) #4 -> ExampleEvent.accepted payload   ⟦2⟧   walk ⟦2b⟧ #2f6fb5
+  (start of trace) #4 -> ExampleEvent.accepted payload   ⟦2⟧   walk ⟦2a⟧ #a4443c
+  (start of trace) #4 -> ExampleEvent.accepted payload
+  (start of trace) #5 -> ExampleEvent.revoked payload
+  (start of trace) #5 -> ExampleEvent.revoked payload   ⟦2⟧   walk ⟦2b⟧ #2f6fb5
+  (start of trace) #6 -> ExampleEvent.revoked other
+  (start of trace) #6 -> ExampleEvent.revoked other   ⟦2⟧   walk ⟦2a⟧ #a4443c

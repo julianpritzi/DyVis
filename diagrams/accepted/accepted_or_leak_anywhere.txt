@@ -1,0 +1,24 @@
+status: ok
+reads back as its claim: yes
+
+[folded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ExampleEvent.accepted payload   +2 folded
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  ExampleEvent.accepted payload -> (end of trace)
+
+[unfolded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ExampleEvent.accepted payload
+  ExampleEvent.sent payload
+  ExampleEvent.keyLeaked payload
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  ExampleEvent.accepted payload -> (end of trace)
+  ExampleEvent.sent payload -> ExampleEvent.accepted payload
+  ExampleEvent.keyLeaked payload -> ExampleEvent.accepted payload   (weak)

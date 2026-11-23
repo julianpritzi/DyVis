@@ -1,0 +1,1938 @@
+[{"opaque": 0,
+  "name": "DYVis.Theorem.authentic",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.received payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.received"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.received payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.received"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_is_authentic",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.received payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.received"},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_follows_exchange",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"n": "SentThenReceived payload",
+      "kind": "named",
+      "c":
+      {"kind": "ex",
+       "c":
+       {"kind": "and",
+        "b":
+        {"vars": ["payload"],
+         "region": {"kind": "before", "i": "j"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.sent payload",
+         "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+        "a":
+        {"vars": ["payload"],
+         "region": {"kind": "before", "i": "i"},
+         "kind": "occursAt",
+         "i": "j",
+         "ev": "ExampleEvent.received payload",
+         "ctor": "DYVis.Theorem.ExampleEvent.received"}},
+       "binder": "j"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_or_leak_anywhere",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"weak": true, "kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_was_sent_or_forged",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"n": "ForgedReceive payload",
+      "kind": "named",
+      "c":
+      {"kind": "and",
+       "b":
+       {"kind": "not",
+        "c":
+        {"vars": ["payload"],
+         "region": {"kind": "whole"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.sent payload",
+         "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+       "a":
+       {"vars": ["payload"],
+        "region": {"kind": "before", "i": "i"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.received payload",
+        "ctor": "DYVis.Theorem.ExampleEvent.received"}}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_after_unrevoked_send",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"n": "NoRevocationBetween payload",
+      "kind": "named",
+      "c":
+      {"region": {"kind": "whole"},
+       "lo": "j",
+       "kind": "absentBetween",
+       "hi": "i",
+       "ev": "ExampleEvent.revoked payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.revoked"}}},
+    "a":
+    {"kind": "and",
+     "b":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "j",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+   "a":
+   {"kind": "or",
+    "b":
+    {"kind": "not",
+     "c":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "j",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"kind": "not",
+     "c":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_was_offered",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "ex",
+    "c":
+    {"kind": "and",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "and",
+       "b": {"vars": ["offers"], "p": "offers ≠ []", "kind": "check"},
+       "a":
+       {"vars": ["offers", "payload"],
+        "p": "payload ∈ offers",
+        "kind": "check"}},
+      "a":
+      {"vars": ["offers"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.offered offers",
+       "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+    "binder": "offers"},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_offer_leaked_or_revoked",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"weak": true, "kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.revoked payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.revoked"},
+      "a":
+      {"n": "OfferedIn payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "payload"],
+          "p": "payload ∈ offers",
+          "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "before", "i": "i"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}},
+     "a":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"weak": true, "kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.keyLeaked payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+      "a":
+      {"n": "OfferedIn payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "payload"],
+          "p": "payload ∈ offers",
+          "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "before", "i": "i"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.both_offered",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "and",
+     "b":
+     {"n": "OfferedIn other",
+      "kind": "named",
+      "c":
+      {"kind": "ex",
+       "c":
+       {"kind": "and",
+        "b":
+        {"vars": ["offers'", "other"], "p": "other ∈ offers'", "kind": "check"},
+        "a":
+        {"vars": ["offers'"],
+         "region": {"kind": "before", "i": "i"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.offered offers'",
+         "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+       "binder": "offers'"}},
+     "a":
+     {"n": "OfferedIn payload",
+      "kind": "named",
+      "c":
+      {"kind": "ex",
+       "c":
+       {"kind": "and",
+        "b":
+        {"vars": ["offers", "payload"],
+         "p": "payload ∈ offers",
+         "kind": "check"},
+        "a":
+        {"vars": ["offers"],
+         "region": {"kind": "before", "i": "i"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.offered offers",
+         "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+       "binder": "offers"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_via_intermediate",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "ex",
+    "c":
+    {"kind": "and",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "and",
+       "b":
+       {"vars": ["mid"],
+        "region": {"weak": true, "kind": "before", "i": "i"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.revoked mid",
+        "ctor": "DYVis.Theorem.ExampleEvent.revoked"},
+       "a":
+       {"n": "OfferedIn mid",
+        "kind": "named",
+        "c":
+        {"kind": "ex",
+         "c":
+         {"kind": "and",
+          "b":
+          {"vars": ["offers", "mid"], "p": "mid ∈ offers", "kind": "check"},
+          "a":
+          {"vars": ["offers"],
+           "region": {"kind": "before", "i": "i"},
+           "kind": "occurs",
+           "ev": "ExampleEvent.offered offers",
+           "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+         "binder": "offers"}}},
+      "a": {"vars": ["payload", "mid"], "p": "payload ≠ mid", "kind": "check"}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+    "binder": "mid"},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_offered_or_unoffered",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "not",
+       "c":
+       {"n": "EverOffered payload",
+        "kind": "named",
+        "c":
+        {"kind": "ex",
+         "c":
+         {"kind": "and",
+          "b":
+          {"vars": ["offers", "payload"],
+           "p": "payload ∈ offers",
+           "kind": "check"},
+          "a":
+          {"vars": ["offers"],
+           "region": {"kind": "whole"},
+           "kind": "occurs",
+           "ev": "ExampleEvent.offered offers",
+           "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+         "binder": "offers"}}},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.received payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.received"}},
+     "a":
+     {"n": "OfferedIn payload",
+      "kind": "named",
+      "c":
+      {"kind": "ex",
+       "c":
+       {"kind": "and",
+        "b":
+        {"vars": ["offers", "payload"],
+         "p": "payload ∈ offers",
+         "kind": "check"},
+        "a":
+        {"vars": ["offers"],
+         "region": {"kind": "before", "i": "i"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.offered offers",
+         "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+       "binder": "offers"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_offered_or_never_offered",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "not",
+       "c":
+       {"n": "EverOffered payload",
+        "kind": "named",
+        "c":
+        {"kind": "ex",
+         "c":
+         {"kind": "and",
+          "b":
+          {"vars": ["offers", "payload"],
+           "p": "payload ∈ offers",
+           "kind": "check"},
+          "a":
+          {"vars": ["offers"],
+           "region": {"kind": "whole"},
+           "kind": "occurs",
+           "ev": "ExampleEvent.offered offers",
+           "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+         "binder": "offers"}}},
+      "a":
+      {"n": "EverOffered payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "payload"],
+          "p": "payload ∈ offers",
+          "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "whole"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}},
+     "a":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+      "a":
+      {"n": "EverOffered payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "payload"],
+          "p": "payload ∈ offers",
+          "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "whole"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "or",
+    "b":
+    {"kind": "not",
+     "c":
+     {"n": "EverOffered payload",
+      "kind": "named",
+      "c":
+      {"kind": "ex",
+       "c":
+       {"kind": "and",
+        "b":
+        {"vars": ["offers", "payload"],
+         "p": "payload ∈ offers",
+         "kind": "check"},
+        "a":
+        {"vars": ["offers"],
+         "region": {"kind": "whole"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.offered offers",
+         "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+       "binder": "offers"}}},
+    "a":
+    {"kind": "not",
+     "c":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_neither_offered",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "and",
+     "b":
+     {"kind": "not",
+      "c":
+      {"n": "EverOffered other",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "other"], "p": "other ∈ offers", "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "whole"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}},
+     "a":
+     {"kind": "not",
+      "c":
+      {"n": "EverOffered payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "payload"],
+          "p": "payload ∈ offers",
+          "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "whole"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_one_or_other_unoffered",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "not",
+      "c":
+      {"n": "EverOffered other",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "other"], "p": "other ∈ offers", "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "whole"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}},
+     "a":
+     {"kind": "not",
+      "c":
+      {"n": "EverOffered payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "and",
+         "b":
+         {"vars": ["offers", "payload"],
+          "p": "payload ∈ offers",
+          "kind": "check"},
+         "a":
+         {"vars": ["offers"],
+          "region": {"kind": "whole"},
+          "kind": "occurs",
+          "ev": "ExampleEvent.offered offers",
+          "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+        "binder": "offers"}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_unoffered_one_or_both",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "not",
+       "c":
+       {"n": "EverOffered other",
+        "kind": "named",
+        "c":
+        {"kind": "ex",
+         "c":
+         {"kind": "and",
+          "b":
+          {"vars": ["offers", "other"], "p": "other ∈ offers", "kind": "check"},
+          "a":
+          {"vars": ["offers"],
+           "region": {"kind": "whole"},
+           "kind": "occurs",
+           "ev": "ExampleEvent.offered offers",
+           "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+         "binder": "offers"}}},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+     "a":
+     {"kind": "and",
+      "b":
+      {"kind": "and",
+       "b":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered other",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "other"],
+            "p": "other ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}},
+       "a":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered payload",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "payload"],
+            "p": "payload ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}}},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_unoffered_either_or_both",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "or",
+      "b":
+      {"kind": "and",
+       "b":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered other",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "other"],
+            "p": "other ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}},
+       "a":
+       {"vars": ["payload"],
+        "region": {"kind": "whole"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.sent payload",
+        "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+      "a":
+      {"kind": "and",
+       "b":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered payload",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "payload"],
+            "p": "payload ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}},
+       "a":
+       {"vars": ["payload"],
+        "region": {"kind": "whole"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.sent payload",
+        "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+     "a":
+     {"kind": "and",
+      "b":
+      {"kind": "and",
+       "b":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered other",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "other"],
+            "p": "other ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}},
+       "a":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered payload",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "payload"],
+            "p": "payload ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}}},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_with_two_named_absences",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "and",
+     "b":
+     {"n": "UnofferedOrRevoked other",
+      "kind": "named",
+      "c":
+      {"kind": "or",
+       "b":
+       {"vars": ["other"],
+        "region": {"kind": "whole"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.revoked other",
+        "ctor": "DYVis.Theorem.ExampleEvent.revoked"},
+       "a":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered other",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "other"],
+            "p": "other ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}}}},
+     "a":
+     {"n": "UnofferedOrRevoked payload",
+      "kind": "named",
+      "c":
+      {"kind": "or",
+       "b":
+       {"vars": ["payload"],
+        "region": {"kind": "whole"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.revoked payload",
+        "ctor": "DYVis.Theorem.ExampleEvent.revoked"},
+       "a":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered payload",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "payload"],
+            "p": "payload ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_with_one_shared_absence",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "and",
+     "b":
+     {"n": "AnchorUnofferedOrRevoked anchor other",
+      "kind": "named",
+      "c":
+      {"kind": "or",
+       "b":
+       {"vars": ["other"],
+        "region": {"kind": "whole"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.revoked other",
+        "ctor": "DYVis.Theorem.ExampleEvent.revoked"},
+       "a":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered anchor",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "anchor"],
+            "p": "anchor ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}}}},
+     "a":
+     {"n": "AnchorUnofferedOrRevoked anchor payload",
+      "kind": "named",
+      "c":
+      {"kind": "or",
+       "b":
+       {"vars": ["payload"],
+        "region": {"kind": "whole"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.revoked payload",
+        "ctor": "DYVis.Theorem.ExampleEvent.revoked"},
+       "a":
+       {"kind": "not",
+        "c":
+        {"n": "EverOffered anchor",
+         "kind": "named",
+         "c":
+         {"kind": "ex",
+          "c":
+          {"kind": "and",
+           "b":
+           {"vars": ["offers", "anchor"],
+            "p": "anchor ∈ offers",
+            "kind": "check"},
+           "a":
+           {"vars": ["offers"],
+            "region": {"kind": "whole"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.offered offers",
+            "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+          "binder": "offers"}}}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_or_attacker_knows",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"weak": true, "kind": "before", "i": "i"},
+      "kind": "knows",
+      "ev": "payload"},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_after_connect",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"vars": ["payload"],
+     "region": {"kind": "before", "i": "i"},
+     "kind": "occurs",
+     "ev": "OtherEvent.connected payload",
+     "ctor": "DYVis.Theorem.OtherEvent.connected"},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_from_listed_offer",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"vars": ["payload"],
+     "region": {"kind": "before", "i": "i"},
+     "kind": "occurs",
+     "ev": "ExampleEvent.sent payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+    "a":
+    {"kind": "and",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "or",
+       "b":
+       {"vars": ["extras", "payload"],
+        "p": "payload ∈ extras",
+        "kind": "check"},
+       "a":
+       {"vars": ["offers", "payload"],
+        "p": "payload ∈ offers",
+        "kind": "check"}},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occursAt",
+       "i": "i",
+       "ev": "ExampleEvent.accepted payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+     "a":
+     {"kind": "and",
+      "b": {"vars": ["offers"], "p": "offers ≠ []", "kind": "check"},
+      "a":
+      {"vars": ["offers"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.offered offers",
+       "ctor": "DYVis.Theorem.ExampleEvent.offered"}}}},
+   "a":
+   {"kind": "or",
+    "b":
+    {"kind": "not",
+     "c":
+     {"kind": "and",
+      "b":
+      {"kind": "or",
+       "b":
+       {"vars": ["extras", "payload"],
+        "p": "payload ∈ extras",
+        "kind": "check"},
+       "a":
+       {"vars": ["offers", "payload"],
+        "p": "payload ∈ offers",
+        "kind": "check"}},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "whole"},
+       "kind": "occursAt",
+       "i": "i",
+       "ev": "ExampleEvent.accepted payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+    "a":
+    {"kind": "not",
+     "c":
+     {"kind": "and",
+      "b": {"vars": ["offers"], "p": "offers ≠ []", "kind": "check"},
+      "a":
+      {"vars": ["offers"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.offered offers",
+       "ctor": "DYVis.Theorem.ExampleEvent.offered"}}}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_offer_was_long",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "ex",
+    "c":
+    {"kind": "and",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "and",
+       "b": {"vars": ["offers"], "p": "offers.length ≠ 1", "kind": "check"},
+       "a":
+       {"vars": ["offers", "payload"],
+        "p": "payload ∈ offers",
+        "kind": "check"}},
+      "a":
+      {"vars": ["offers"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.offered offers",
+       "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+    "binder": "offers"},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_offer_listed_or_empty",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "ex",
+    "c":
+    {"kind": "and",
+     "b":
+     {"kind": "and",
+      "b":
+      {"kind": "or",
+       "b": {"vars": ["offers"], "p": "offers = []", "kind": "check"},
+       "a":
+       {"vars": ["offers", "payload"],
+        "p": "payload ∈ offers",
+        "kind": "check"}},
+      "a":
+      {"vars": ["offers"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.offered offers",
+       "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+    "binder": "offers"},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_with_conjunct_and_disjunct",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.keyLeaked payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+     "a":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.received payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.received"},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_via_named_conjunction",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"n": "SentAndReceived payload",
+     "kind": "named",
+     "c":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.received payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.received"},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_via_named_disjunction",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"n": "SentOrLeaked payload",
+     "kind": "named",
+     "c":
+     {"kind": "or",
+      "b":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.keyLeaked payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+      "a":
+      {"vars": ["payload"],
+       "region": {"kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.sent_before_acceptance",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "ex",
+    "c":
+    {"kind": "and",
+     "b":
+     {"vars": ["payload"],
+      "region": {"weak": true, "kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+    "binder": "i"},
+   "a":
+   {"kind": "not",
+    "c":
+    {"kind": "ex",
+     "c":
+     {"vars": ["payload"],
+      "region": {"kind": "whole"},
+      "kind": "occursAt",
+      "i": "i",
+      "ev": "ExampleEvent.accepted payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.accepted"},
+     "binder": "i"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_or_escaped",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"tie": "DYVis.Theorem.Escaped.dyvisCases",
+      "of": "DYVis.Theorem.Escaped",
+      "n": "Escaped payload",
+      "kind": "cases",
+      "c":
+      {"kind": "or",
+       "b":
+       {"n": "Escaped.neverOffered payload",
+        "kind": "named",
+        "c":
+        {"kind": "all",
+         "closed": false,
+         "c":
+         {"kind": "not",
+          "c":
+          {"vars": ["payload"],
+           "region": {"kind": "whole"},
+           "kind": "occursAt",
+           "i": "i'",
+           "ev": "ExampleEvent.offered [payload]",
+           "ctor": "DYVis.Theorem.ExampleEvent.offered"}},
+         "binder": "i'"}},
+       "a":
+       {"n": "Escaped.leaked payload",
+        "kind": "named",
+        "c":
+        {"vars": ["payload"],
+         "region": {"kind": "whole"},
+         "kind": "occurs",
+         "ev": "ExampleEvent.keyLeaked payload",
+         "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"}}}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_reached_from_root",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"tie": "DYVis.Theorem.ReachedFrom.dyvisCases",
+     "of": "DYVis.Theorem.ReachedFrom",
+     "n": "ReachedFrom root payload",
+     "kind": "cases",
+     "c":
+     {"kind": "or",
+      "b":
+      {"n": "ReachedFrom.step root payload",
+       "kind": "named",
+       "c":
+       {"kind": "ex",
+        "c":
+        {"kind": "ex",
+         "c":
+         {"kind": "and",
+          "b":
+          {"kind": "and",
+           "b":
+           {"vars": ["next"],
+            "region": {"weak": true, "kind": "before", "i": "i"},
+            "kind": "occurs",
+            "ev": "ExampleEvent.sent next",
+            "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+           "a":
+           {"of": "DYVis.Theorem.ReachedFrom",
+            "n": "ReachedFrom root mid",
+            "kind": "again"}},
+          "a":
+          {"vars": ["next", "payload"],
+           "p": "next = payload",
+           "kind": "check"}},
+         "binder": "next"},
+        "binder": "mid"}},
+      "a":
+      {"n": "ReachedFrom.here root payload",
+       "kind": "named",
+       "c":
+       {"vars": ["root", "payload"], "p": "root = payload", "kind": "check"}}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 1,
+  "name": "DYVis.Theorem.accepted_or_never_reached",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"kind": "not",
+      "c": {"p": "ReachedFrom tr root payload", "kind": "opaque"}},
+     "a":
+     {"vars": ["payload"],
+      "region": {"kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.sent payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_with_check_and_two_events",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"weak": true, "kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"kind": "and",
+      "b":
+      {"kind": "and",
+       "b":
+       {"vars": ["other"],
+        "region": {"weak": true, "kind": "before", "i": "i"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.received other",
+        "ctor": "DYVis.Theorem.ExampleEvent.received"},
+       "a":
+       {"vars": ["other"],
+        "region": {"weak": true, "kind": "before", "i": "i"},
+        "kind": "occurs",
+        "ev": "ExampleEvent.sent other",
+        "ctor": "DYVis.Theorem.ExampleEvent.sent"}},
+      "a":
+      {"vars": ["payload", "other"], "p": "payload ≠ other", "kind": "check"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true},
+ {"opaque": 0,
+  "name": "DYVis.Theorem.accepted_with_stored_and_event",
+  "file": "DYVis/Theorem/Example.lean",
+  "emitters": {},
+  "claim":
+  {"kind": "or",
+   "b":
+   {"kind": "and",
+    "b":
+    {"kind": "or",
+     "b":
+     {"vars": ["payload"],
+      "region": {"weak": true, "kind": "before", "i": "i"},
+      "kind": "occurs",
+      "ev": "ExampleEvent.keyLeaked payload",
+      "ctor": "DYVis.Theorem.ExampleEvent.keyLeaked"},
+     "a":
+     {"kind": "and",
+      "b":
+      {"vars": ["payload"],
+       "region": {"weak": true, "kind": "before", "i": "i"},
+       "kind": "occurs",
+       "ev": "ExampleEvent.sent payload",
+       "ctor": "DYVis.Theorem.ExampleEvent.sent"},
+      "a":
+      {"vars": ["st"],
+       "region": {"weak": true, "kind": "before", "i": "i"},
+       "kind": "stored",
+       "ev": "st"}}},
+    "a":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}},
+   "a":
+   {"kind": "not",
+    "c":
+    {"vars": ["payload"],
+     "region": {"kind": "whole"},
+     "kind": "occursAt",
+     "i": "i",
+     "ev": "ExampleEvent.accepted payload",
+     "ctor": "DYVis.Theorem.ExampleEvent.accepted"}}},
+  "certified": true}]

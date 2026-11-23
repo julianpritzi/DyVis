@@ -1,0 +1,16 @@
+{"version": "1.2.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"url": "https://github.com/julianpritzi/dylean.git",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "125414c96943550df4fb21363328b34689c762fb",
+   "name": "dylean",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "dyaeneas-main",
+   "inherited": false,
+   "configFile": "lakefile.toml"}],
+ "name": "dyvis",
+ "lakeDir": ".lake",
+ "fixedToolchain": false}

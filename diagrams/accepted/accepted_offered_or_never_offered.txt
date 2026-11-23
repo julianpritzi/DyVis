@@ -1,0 +1,46 @@
+status: ok
+reads back as its claim: yes
+
+[folded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ⟦2⟧ ∄ EverOffered payload   [forbidden]   +1 folded
+  (start of trace) #2
+  ExampleEvent.accepted payload   +3 folded
+  (start of trace) #3
+  --
+  (start of trace) #3 -> ExampleEvent.accepted payload
+  (start of trace) #3 -> ExampleEvent.accepted payload   ⟦2⟧   walk ⟦2⟧ #a4443c
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (start of trace) #2 -> (end of trace)   ⟦2⟧
+  ExampleEvent.accepted payload -> (end of trace)
+  ExampleEvent.accepted payload -> (end of trace)   ⟦2⟧   walk ⟦2⟧ #a4443c
+
+[unfolded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ⟦2⟧ ∄ EverOffered payload   [forbidden]
+    ExampleEvent.offered offers   [forbidden]
+      • payload ∈ offers
+  (start of trace) #2
+  ExampleEvent.accepted payload
+  (box)
+    EverOffered payload
+      ExampleEvent.offered offers #2
+        • payload ∈ offers
+    ExampleEvent.sent payload
+  (box) #2
+    EverOffered payload #2
+      ExampleEvent.offered offers #3
+        • payload ∈ offers
+      (start of trace) #3
+  --
+  (start of trace) #3 -> ExampleEvent.offered offers #3   ⟦2⟧   walk ⟦2⟧ #a4443c
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (start of trace) #2 -> (end of trace)   ⟦2⟧
+  ExampleEvent.accepted payload -> (end of trace)
+  ExampleEvent.accepted payload -> (end of trace)   ⟦2⟧   walk ⟦2⟧ #a4443c
+  (box) -> ExampleEvent.accepted payload
+  (box) #2 -> ExampleEvent.accepted payload   ⟦2⟧   walk ⟦2⟧ #a4443c

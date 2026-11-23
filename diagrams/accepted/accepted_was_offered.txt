@@ -1,0 +1,24 @@
+status: ok
+reads back as its claim: yes
+
+[folded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ExampleEvent.accepted payload   +1 folded
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  ExampleEvent.accepted payload -> (end of trace)
+
+[unfolded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  ExampleEvent.accepted payload
+  ExampleEvent.offered offers
+    • payload ∈ offers
+    • offers ≠ []
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  ExampleEvent.accepted payload -> (end of trace)
+  ExampleEvent.offered offers -> ExampleEvent.accepted payload

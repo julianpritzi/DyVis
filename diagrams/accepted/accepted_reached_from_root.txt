@@ -1,0 +1,38 @@
+status: ok
+reads back as its claim: yes
+
+[folded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  (box)
+    ExampleEvent.accepted payload
+    ReachedFrom root payload   +1 folded
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (box) -> (end of trace)
+
+[unfolded]
+  (end of trace)
+  ⟦1⟧ ∄ ExampleEvent.accepted payload   [forbidden]
+  (start of trace)
+  (box) #2
+    ExampleEvent.accepted payload
+    ReachedFrom root payload
+      (empty event)
+      ReachedFrom.here root payload
+        (checks)
+          • root = payload
+      ReachedFrom.step root payload
+        (box)
+          ReachedFrom root mid  ↺
+          ExampleEvent.sent next
+            • next = payload
+    (begins again)
+  --
+  (start of trace) -> (end of trace)   ⟦1⟧
+  (box) #2 -> (end of trace)
+  (checks) -> (empty event)
+  (box) -> (empty event)   (weak)
+  ReachedFrom root payload -> (begins again)
+  (begins again) -> ReachedFrom root mid  ↺
