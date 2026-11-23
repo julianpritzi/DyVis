@@ -142,7 +142,7 @@ meta def concludesIndependently (e : Expr) : MetaM Bool :=
 private meta def moduleOf (env : Environment) (n : Name) : Option Name :=
   (env.getModuleIdxFor? n).map fun i => env.header.moduleNames[i.toNat]!
 
-/-- `set_option dyvis.model "Protocols Crypto DY DYVis"`: the module-name
+/-- `set_option dyvis.model "MyProject DY DYVis"`: the module-name
     prefixes whose declarations count as the model. Used twice, for the same
     reason both times: a constant mentioned in core is neither a protocol action
     nor a protocol predicate. The default covers DyLean (`DY`) and this library,

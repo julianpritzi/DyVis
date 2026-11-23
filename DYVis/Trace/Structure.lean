@@ -19,9 +19,9 @@
 -- hiding it: if two message types render alike, the reader sees that.
 -- Only the three sub-functors every byte algebra has are probed here. DY's own
 -- `Hash` / `Sign` / `DiffieHellman` equational theories are deliberately NOT
--- imported: `Crypto` ships replacements for them that collide on names like
--- `DY.Bytes.dhSkLabel`, so importing both is an error, and every campaign in this
--- repo uses the `Crypto` ones. Their probes live in `Crypto/DYVis.lean`.
+-- imported: a project may ship replacements that collide with them on names like
+-- `DY.Bytes.dhSkLabel` (DyAeneas does), so importing both would be an error. A
+-- project's probes live in the project (DyAeneas: `DyAeneas/DYVis.lean`).
 module
 
 public import DYVis.Trace.Scenario

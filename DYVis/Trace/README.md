@@ -218,11 +218,11 @@ instance : BytesShape where
 
 `stdProbes` covers `Literal`, `Concat` and `Random`, which every algebra has.
 A project's own constructors get their probes in that project, next to the
-constructors they project (in DyAeneas: `Crypto/DYVis.lean`), so `DYVis` itself
+constructors they project (in DyAeneas: `DyAeneas/DYVis.lean`), so `DYVis` itself
 stays DY-only and its checks stay
 self-contained. DY's own `Hash` / `Sign` / `DiffieHellman` equational theories are
-deliberately not imported: `Crypto` ships replacements that collide with them on
-names like `DY.Bytes.dhSkLabel`, and every campaign here uses the `Crypto` ones.
+deliberately not imported: a project may ship replacements that collide with them
+on names like `DY.Bytes.dhSkLabel` (DyAeneas does).
 
 A term's structure is printed the first time it appears and referenced by number
 afterwards, so a repeated message costs one token: the delivery of a TLS record
