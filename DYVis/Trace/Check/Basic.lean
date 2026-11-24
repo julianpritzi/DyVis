@@ -32,7 +32,7 @@ instance : ScenarioView where
 
 instance : BytesShape where probes := stdProbes
 
-private def logOf {α : Type} (x : Scenario α) : Log := (x.run Trace.nil).snd
+private def logOf {α : Type} (x : Scenario α) : Log := (x.run Trace.empty).snd
 
 private def texts (l : Log) : List String :=
   l.lines.filterMap fun
@@ -274,17 +274,17 @@ private def hashyOut : String := mermaidOf hashy
 
 /-! ## Demo tour -/
 
-#eval named.writeDiagram Trace.nil
+#eval named.writeDiagram Trace.empty
   "DYVis/Trace/Check/Basic/01-named-send-and-delivery.md" "DYVis — named send, drawn read"
-#eval unnamedSend.writeDiagram Trace.nil
+#eval unnamedSend.writeDiagram Trace.empty
   "DYVis/Trace/Check/Basic/02-unnamed-send.md" "DYVis — an unnamed send"
-#eval logsEvent.writeDiagram Trace.nil
+#eval logsEvent.writeDiagram Trace.empty
   "DYVis/Trace/Check/Basic/03-logged-event.md" "DYVis — an event named by its constructor"
-#eval quiet.writeDiagram Trace.nil
+#eval quiet.writeDiagram Trace.empty
   "DYVis/Trace/Check/Basic/04-no-bar.md" "DYVis — a read that opens no bar"
-#eval namedValue.writeDiagram Trace.nil
+#eval namedValue.writeDiagram Trace.empty
   "DYVis/Trace/Check/Basic/05-repeated-value.md" "DYVis — one value drawn twice"
-#eval badNames.writeDiagram Trace.nil
+#eval badNames.writeDiagram Trace.empty
   "DYVis/Trace/Check/Basic/06-name-problems.md" "DYVis — a name conflict and a name that reached nothing"
 
 end DYVis.Trace.Check

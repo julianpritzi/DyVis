@@ -442,7 +442,7 @@ theorem region_bound_of (n : Nat) (tr : ExecTrace) (hn : n ≤ tr.length)
     have hlen := Trace.length_prefix tr n hn
     simp only [Region.Below] at hr
     simp only [Region.bound, Region.of]
-    exact Trace.prefix_of_le (Trace.prefix_le tr n) j (by omega)
+    exact (Trace.le_imp_prefix_le_length_eq _ _ j (Trace.prefix_le_self tr n) (by omega)).symm
 
 /-- Reading a claim on the run cut back to `n` is the same as reading the claim
     with its unbounded regions narrowed to `n`. This is what turns "the theorem

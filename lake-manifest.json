@@ -5,7 +5,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "125414c96943550df4fb21363328b34689c762fb",
+   "rev": "4ccf7e7e9a0025a9a953d272ead94114e818cb66",
    "name": "dylean",
    "manifestFile": "lake-manifest.json",
    "inputRev": "dyaeneas-main",
